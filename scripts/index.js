@@ -1,8 +1,6 @@
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 const placeList = document.querySelector('.content').querySelector('.places__list');
-const cardLikeButton = cardTemplate.querySelector('.card__like-button');
-
 // @todo: DOM узлы
 
 // @todo: Функция создания карточки
