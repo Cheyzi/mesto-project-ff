@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import initialCards from '../components/cards';
-import {createCard, deleteCard, actionLike} from '../components/card';
-import {openModal, closeModal} from '../components/modal'; 
+import { createCard, deleteCard, actionLike } from '../components/card';
+import { openModal, closeModal } from '../components/modal';
 
 //темлейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
@@ -18,6 +18,41 @@ const popupImage = document.querySelector('.popup_type_image');
 const profileForm = document.forms['edit-profile'];
 const name = profileForm.elements.name;
 const description = profileForm.elements.description;
+
+//Добавление слушателя ко всем попапам
+for (const popup of document.querySelectorAll('.popup')) {
+  popup.addEventListener('click', (evt) => {
+    const classList = evt.target.classList;
+    if (classList.contains('popup__close') || classList.contains('popup')) {
+      closeModal(popup);
+    };
+  });
+}
+//открытие попапа для создание карточки
+cardAddButton.addEventListener('click', () => {
+  cardForm.reset();
+  openModal(popupNewCard);
+});
+
+//форма добавления карточки
+const cardForm = document.forms['new-place'];
+const placeName = cardForm.elements['place-name'];
+const link = cardForm.elements.link;
+
+//функция довления карточки в начало массива карточек
+const addCard = (evt) => {
+  evt.preventDefault();
+  const data = {
+    name: placeName.value,
+    link: link.value,
+  };
+  initialCards.unshift(data);
+  addItem(data);
+  closeModal(popupNewCard);
+}
+
+cardForm.addEventListener('submit', addCard);
+
 //функция сохранения профиля
 const editProfile = (evt) => {
   evt.preventDefault();
@@ -25,71 +60,36 @@ const editProfile = (evt) => {
   const profileDescription = document.querySelector('.profile__description');
   profileTitle.textContent = name.value;
   profileDescription.textContent = description.value;
+
   closeModal(popupProfileEdit);
-  name.value = '';
-  description.value = '';
 }
 
 profileForm.addEventListener('submit', editProfile);
-//форма добавления карточки
-const cardForm = document.forms['new-place'];
-const placeName = cardForm.elements['place-name'];
-const link = cardForm.elements.link;
-//функция довления карточки в начало массива карточек
-const addCard = (evt) => {
-  evt.preventDefault();
-  const data = {
-    name:placeName.value,
-    link:link.value,
-  };
-  initialCards.unshift(data);
-  addItem(data);
-  closeModal(popupNewCard);
-  placeName.value = '';
-  link.value = '';
-}
-cardForm.addEventListener('submit', addCard)
 
-//функция добавления событий модальных окон и их открытие и закрытие
-const popupEvent = (elementListener, popup, item=null)=> {
+//Слушатель на кнопку +
+profileEditButton.addEventListener('click', () => {
+  const profileTitle = document.querySelector('.profile__title');
+  const profileDescription = document.querySelector('.profile__description');
+  name.value = profileTitle.textContent;
+  description.value = profileDescription.textContent;
+  openModal(popupProfileEdit);
+});
 
-  elementListener.addEventListener('click', () => {
-
-    if(elementListener.classList.contains('card__image'))
-    {
-      const popupImg = popup.querySelector('.popup__image');
-      const popupCaption = popup.querySelector('.popup__caption');
-  
-      popupImg.src = item.link;
-      popupCaption.textContent = item.name;
-    }
-    openModal(popup)
-  });
-
-  popup.addEventListener('click', (evt) => {
-
-    const classList = evt.target.classList;
-    if (classList.contains('popup__close') || classList.contains('popup')) {
-      closeModal(popup)
-    };
-  });
-};
-popupEvent(cardAddButton, popupNewCard);
-popupEvent(profileEditButton, popupProfileEdit);
 
 //функция добавление созданной карточки в список по полученным данным
 const addItem = (item) => {
-  const newCard = createCard(item.link, item.name, cardTemplate);
 
-  const cardDeleteButton = newCard.querySelector('.card__delete-button');
-  cardDeleteButton.addEventListener('click', e => deleteCard(e.target));
+  const openImagePopup = () => {
+    const popupImg = popupImage.querySelector('.popup__image');
+    const popupCaption = popupImage.querySelector('.popup__caption');
+  
+    popupImg.src = item.link;
+    popupCaption.textContent = item.name;
 
-  const cardLikeButton = newCard.querySelector('.card__like-button');
-  cardLikeButton.addEventListener('click', e => actionLike(e.target))
-  
-  const imageEditButton = newCard.querySelector('.card__image');
-  
-  popupEvent(imageEditButton, popupImage, item);
+    openModal(popupImage);
+  }
+
+  const newCard = createCard(item.link, item.name, cardTemplate, deleteCard, actionLike, openImagePopup);
   
   placeList.prepend(newCard);
 }

@@ -1,15 +1,15 @@
-//ссылка для правильной работы обработчика
-let keyClose = null;
-//функция открытия модального окна с функи
+//функция для Escape
+const keyClose = (evt) => {
+  if (evt.key === 'Escape') {
+    const element = document.querySelector('.popup_is-opened');
+    closeModal(element);
+  }
+};
+
+//функция открытия модального окна 
 const openModal = element => {
   element.classList.add('popup_is-opened');
-  //функция-обработчик для Escape
-  keyClose = (evt) => {
-    if (evt.key === 'Escape') {
-      closeModal(element);
-      return;
-    }
-  }
+  
   document.addEventListener('keydown', keyClose);
 };
 //функия закрытия модального окна
@@ -18,4 +18,4 @@ const closeModal = element => {
   document.removeEventListener('keydown', keyClose);
 };
 
-export {openModal, closeModal};
+export { openModal, closeModal };
