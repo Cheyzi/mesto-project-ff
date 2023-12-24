@@ -12,13 +12,18 @@ module.exports = {
     publicPath: ''
   },
   // mode: 'production', //режим финальной сборки
-  mode: 'development', //режим разработчика
+  mode: 'production', //режим разработчика
   devServer: {
     static: path.resolve(__dirname, './dist'), // путь, куда "смотрит" режим разработчика
     compress: true, // это ускорит загрузку в режиме разработки
     port: 8080, // порт, чтобы открывать сайт по адресу localhost:8080, но можно поменять порт
     hot: true, //автоматическое обновление страницы при изменении
     open: true // сайт будет открываться сам при запуске npm run dev
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
   },
   module: {
     rules: [ // rules — это массив правил

@@ -1,2 +1,3 @@
 https://github.com/Cheyzi/mesto-project-ff
-СТЕК: webpack, postcss, babel, js, html, css
+ссылка на сайт: 
+СТЕК: webpack, postcss, babel, js, html, css, restApi

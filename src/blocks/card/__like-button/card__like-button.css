@@ -1,8 +1,14 @@
+.card__container-like {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap:3px;
+}
+
 .card__like-button {
   width: 21px;
   height: 18px;
   background: transparent url('../../../images/like-inactive.svg') no-repeat;
-  
   background-size: 21px 18px;
   border: none;
   cursor: pointer;
@@ -15,6 +21,20 @@
   transition: 0.3s;
 }
 
-.card__like-button:hover {
-  opacity: 0.6;
+.card__like-button__zeroLikes {
+  transform: translateY(10px);
 }
+
+
+.numberOfLikes {
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  opacity: 1;
+  transition: opacity .2s;
+}
+ 
+.numberOfLikes__zero {
+  opacity: 0;
+}
+
