@@ -12,7 +12,7 @@ module.exports = {
     publicPath: ''
   },
   // mode: 'production', //режим финальной сборки
-  mode: 'production', //режим разработчика
+  mode: 'development', //режим разработчика
   devServer: {
     static: path.resolve(__dirname, './dist'), // путь, куда "смотрит" режим разработчика
     compress: true, // это ускорит загрузку в режиме разработки
