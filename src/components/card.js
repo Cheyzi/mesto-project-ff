@@ -5,7 +5,7 @@ const deleteCard = (deleteButton) => {
 }
 //функция работы с лайком
 const actionLike = (likeButton) => {
-  likeButton.classList.toggle('card__like-button_is-active');
+  // likeButton.classList.toggle('card__like-button_is-active');
 }
 
 //функция создания карточки
@@ -17,7 +17,7 @@ const createCard = (data, userId, cardTemplate, openModal, {deleteCardCallback =
   newCard.querySelector('.card__image').alt = data.name;
  
   const cardDeleteButton = newCard.querySelector('.card__delete-button');
-  cardDeleteButton.addEventListener('click', e => deleteCardCallback(e.target));
+  cardDeleteButton.addEventListener('click', () => deleteCardCallback(cardDeleteButton));
 
   if(data.owner._id === userId) {
     cardDeleteButton.style.display = "block";
@@ -40,10 +40,10 @@ const createCard = (data, userId, cardTemplate, openModal, {deleteCardCallback =
     cardLikeButton.classList.remove("card__like-button__zeroLikes");
   }
 
-  cardLikeButton.addEventListener('click', e => actionLikeCallback(e.target))
+  cardLikeButton.addEventListener('click', () => actionLikeCallback(cardLikeButton))
   const imageEditButton = newCard.querySelector('.card__image');
 
-  imageEditButton.addEventListener('click', openModal);
+  imageEditButton.addEventListener('click', () => openModal(data));
 
   return newCard;
 }

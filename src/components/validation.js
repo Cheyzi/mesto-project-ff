@@ -75,6 +75,8 @@ const enableValidation = (selectors) => {
 };
 
 const clearValidation = (formElement) => {
+  if (!formElement) return;
+  
   const buttonElement = formElement.querySelector('.popup__button')
   buttonElement.classList.add("popup__button_disabled");
 

@@ -31,7 +31,6 @@
   font-family: inherit;
   font-size: 13px;
   opacity: 1;
-  transition: opacity .2s;
 }
  
 .numberOfLikes__zero {

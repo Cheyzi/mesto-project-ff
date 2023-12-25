@@ -1,5 +1,3 @@
-import {clearValidation} from '../components/validation';
-
 //функция для Escape
 const keyClose = (evt) => {
   if (evt.key === 'Escape') {
@@ -19,9 +17,9 @@ const closeModal = element => {
   
   element.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', keyClose);
-  if(element.querySelector('.popup__form')) {
-    clearValidation(element.querySelector('.popup__form'));
-  }
+  // // if(element.querySelector('.popup__form')) {
+  //   clearValidation(element.querySelector('.popup__form'));
+  // // }
   
 
 };
