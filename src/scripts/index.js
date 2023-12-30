@@ -33,6 +33,7 @@ const popupCaption = popupImage.querySelector(".popup__caption");
 
 const popupImageProfile = document.querySelector(".popup_type_image-profile");
 const popupDeleteCard = document.querySelector(".popup_type_delete-card");
+const buttonPopupDeleteCard = popupDeleteCard.querySelector(".popup__button_delete");
 
 
 //Элементы профиля
@@ -153,69 +154,66 @@ const openImagePopup = (data) => {
   openModal(popupImage);
 };
 
+
 //функция добавление созданной карточки в список по полученным данным
 const addItem = (item, userId) => {
   
-  const actionLikeOverride = (likeButton) => {
+  const newCard = createCard(item, userId, cardTemplate, openImagePopup, {
+    deleteCardCallback: deleteCardOverride,
+    actionLikeCallback: actionLikeOverride,
+  });
+
+  const spanLikes = newCard.querySelector('.numberOfLikes');
+  function actionLikeOverride(likeButton, refreshNumber){
     actionLike(likeButton);
-
-    const numberLikes = likeButton.parentElement.querySelector('.numberOfLikes');
-
-    const refreshNumber = (data) => {
-      likeButton.classList.toggle('card__like-button_is-active');
-      numberLikes.textContent = data.likes.length;
-      if(numberLikes.textContent === "0") {
-        numberLikes.classList.add("numberOfLikes__zero");
-        likeButton.classList.add("card__like-button__zeroLikes");
-      } else {
-        numberLikes.classList.remove("numberOfLikes__zero");
-        likeButton.classList.remove("card__like-button__zeroLikes");
-      }
-    }
-
-    if (!likeButton.classList.contains("card__like-button_is-active")) {
+    if (likeButton.classList.contains("card__like-button_is-active")) {
       putLike(item._id)
-        .then(refreshNumber)
+        .then(data => {
+          spanLikes.textContent = data.likes.length;
+          refreshNumber();
+        })
         .catch((err) => {
           console.log(err);
         });
     } else {
       deleteLike(item._id)
-        .then(refreshNumber)
+        .then(data => {
+          spanLikes.textContent = data.likes.length;
+          refreshNumber();
+        })
         .catch((err) => {
           console.log(err);
         });
     }
   };
 
-  const buttonPopupDeleteCard = document.querySelector(".popup__button_delete");
-
-  const deleteCardOverride = (deleteButton) => {
-    deleteCard(deleteButton);
-
-    openModal(popupDeleteCard);
-
-    buttonPopupDeleteCard.addEventListener("click", (e) => {
-      const defaultText = e.target.textContent;
-      e.target.textContent = 'Удаление...';
+  function deleteCallback(){
+    buttonPopupDeleteCard.removeEventListener("click", deleteCallback);
+    const defaultText = buttonPopupDeleteCard.textContent;
+    buttonPopupDeleteCard.textContent = 'Удаление...';
       deleteCardApi(item._id)
         .then(data => {
-          deleteButton.parentElement.remove();
+          newCard.remove();
           closeModal(popupDeleteCard);
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          e.target.textContent = defaultText;
+          buttonPopupDeleteCard.textContent = defaultText;
         });
-    });
-  };
+  }
 
-  const newCard = createCard(item, userId, cardTemplate, openImagePopup, {
-    deleteCardCallback: deleteCardOverride,
-    actionLikeCallback: actionLikeOverride,
-  });
+  function deleteCardOverride(deleteButton){
+    deleteCard(deleteButton);
+    openModal(popupDeleteCard);
+    popupDeleteCard.addEventListener("click", (evt) => {
+      const classList = evt.target.classList;
+      if (classList.contains("popup__close") || classList.contains("popup")) {
+        buttonPopupDeleteCard.removeEventListener("click", deleteCallback);
+      }})
+    buttonPopupDeleteCard.addEventListener("click", deleteCallback);
+  };
 
   placeList.prepend(newCard);
 };

@@ -13,10 +13,11 @@ const openModal = element => {
   document.addEventListener('keydown', keyClose);
 };
 //функия закрытия модального окна
-const closeModal = element => {
+const closeModal = (element) => {
   
   element.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', keyClose);
+  
   // // if(element.querySelector('.popup__form')) {
   //   clearValidation(element.querySelector('.popup__form'));
   // // }
