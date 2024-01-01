@@ -14,7 +14,7 @@ import {
 } from "../scripts/api";
 import { Promise } from "core-js";
 
-import {clearValidation} from '../components/validation';
+import { clearValidation } from '../components/validation';
 
 //темлейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
@@ -102,7 +102,7 @@ const addCard = (e) => {
   const defaultText = e.submitter.textContent;
   e.submitter.textContent += '...';
   postCard(placeName.value, link.value)
-    .then((data)=> {
+    .then((data) => {
       const userId = data.owner._id;
       addItem(data, userId);
       closeModal(popupNewCard);
@@ -119,7 +119,7 @@ cardForm.addEventListener("submit", addCard);
 
 //функция сохранения профиля
 const editProfile = (e) => {
-  
+
   const defaultText = e.submitter.textContent;
   e.submitter.textContent += '...';
   patchUser(name.value, description.value)
@@ -154,23 +154,47 @@ const openImagePopup = (data) => {
   openModal(popupImage);
 };
 
+let card = null;
+
+
+const deleteCallback= (evt) => {
+  console.log('test');
+  const defaultText = evt.target.textContent;
+  evt.target.textContent = 'Удаление...';
+  deleteCardApi(card.id)
+    .then(() => {
+      deleteCard(card);
+      closeModal(popupDeleteCard);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      evt.target.textContent = defaultText;
+    });
+}
+
+buttonPopupDeleteCard.addEventListener("click", deleteCallback);
 
 //функция добавление созданной карточки в список по полученным данным
 const addItem = (item, userId) => {
-  
+
+  const deleteCardOverride = (newCard) => {
+    card = newCard;
+    openModal(popupDeleteCard);
+  };
+
   const newCard = createCard(item, userId, cardTemplate, openImagePopup, {
     deleteCardCallback: deleteCardOverride,
     actionLikeCallback: actionLikeOverride,
   });
 
-  const spanLikes = newCard.querySelector('.numberOfLikes');
-  function actionLikeOverride(likeButton, refreshNumber){
-    actionLike(likeButton);
-    if (likeButton.classList.contains("card__like-button_is-active")) {
+  function actionLikeOverride(likeButton, numberOfLikes, likes) {
+    // actionLike(likeButton, numberOfLikes, likes);
+    if (!likeButton.classList.contains("card__like-button_is-active")) {
       putLike(item._id)
         .then(data => {
-          spanLikes.textContent = data.likes.length;
-          refreshNumber();
+          actionLike(likeButton, numberOfLikes, data.likes.length);
         })
         .catch((err) => {
           console.log(err);
@@ -178,41 +202,12 @@ const addItem = (item, userId) => {
     } else {
       deleteLike(item._id)
         .then(data => {
-          spanLikes.textContent = data.likes.length;
-          refreshNumber();
+          actionLike(likeButton, numberOfLikes, data.likes.length);
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  };
-
-  function deleteCallback(){
-    buttonPopupDeleteCard.removeEventListener("click", deleteCallback);
-    const defaultText = buttonPopupDeleteCard.textContent;
-    buttonPopupDeleteCard.textContent = 'Удаление...';
-      deleteCardApi(item._id)
-        .then(data => {
-          newCard.remove();
-          closeModal(popupDeleteCard);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          buttonPopupDeleteCard.textContent = defaultText;
-        });
-  }
-
-  function deleteCardOverride(deleteButton){
-    deleteCard(deleteButton);
-    openModal(popupDeleteCard);
-    popupDeleteCard.addEventListener("click", (evt) => {
-      const classList = evt.target.classList;
-      if (classList.contains("popup__close") || classList.contains("popup")) {
-        buttonPopupDeleteCard.removeEventListener("click", deleteCallback);
-      }})
-    buttonPopupDeleteCard.addEventListener("click", deleteCallback);
   };
 
   placeList.prepend(newCard);
@@ -229,19 +224,19 @@ enableValidation({
 
 
 Promise.all([getUser(), getCards()])
-.then((data) => {
-  const dataUser = data[0];
-  const dataCards = data[1];
-  profileTitle.textContent = dataUser.name;
-  profileDescription.textContent = dataUser.about;
-  profileImage.style.backgroundImage = `url(${dataUser.avatar})`;
-  const userId = dataUser._id;
-  const userName = dataUser.name;
+  .then((data) => {
+    const dataUser = data[0];
+    const dataCards = data[1];
+    profileTitle.textContent = dataUser.name;
+    profileDescription.textContent = dataUser.about;
+    profileImage.style.backgroundImage = `url(${dataUser.avatar})`;
+    const userId = dataUser._id;
+    const userName = dataUser.name;
 
-  placeList.innerHTML = "";
+    placeList.innerHTML = "";
 
-  dataCards.reverse().forEach((card) => addItem(card, userId));
-})
-.catch((err) => {
-  console.log(err);
-});
+    dataCards.reverse().forEach((card) => addItem(card, userId));
+  })
+  .catch((err) => {
+    console.log(err);
+  });
