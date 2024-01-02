@@ -158,7 +158,6 @@ let card = null;
 
 
 const deleteCallback= (evt) => {
-  console.log('test');
   const defaultText = evt.target.textContent;
   evt.target.textContent = 'Удаление...';
   deleteCardApi(card.id)
